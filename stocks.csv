@@ -1,0 +1,3 @@
+ticker,regular_market_price,week_range,volume,avg_volume,market_cap,beta,pe_ratio,eps,earnings_date,dividend_yield,ex_dividend_date,year_target_est
+LEVE3.SA,34.09,27.56 - 52.52,"330,700","726,600",4.621B,0.84,6.19,5.51,"Mar 11, 2024",7.95 (23.37%),"Dec 22, 2023",31.33
+TUPY3.SA,26.07,21.48 - 29.18,"363,000","544,380",3.754B,0.79,9.31,2.80,"Mar 25, 2024 - Mar 29, 2024",1.02 (3.85%),"Jan 23, 2024",34.59
