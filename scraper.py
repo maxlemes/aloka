@@ -136,13 +136,18 @@ driver.set_window_size(1150, 1080)
 stocks = []
 
 # if there are no CLI parameters
-if len(sys.argv) <= 1:
-    print('Ticker symbol CLI argument missing!')
-    sys.exit(2)
+# if len(sys.argv) <= 1:
+#     print('Ticker symbol CLI argument missing!')
+#     sys.exit(2)
+
+tickers = ['LEVE3.SA', 'TUPY3.SA', 'SUZB3.SA']
 
 # scraping all market securities
-for ticker_symbol in sys.argv[1:]:
+for ticker_symbol in tickers:
+# for ticker_symbol in sys.argv[1:]:
     stocks.append(scrape_stock(driver, ticker_symbol))
+
+
 
 # close the browser and free up the resources
 driver.quit()

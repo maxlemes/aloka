@@ -16,6 +16,8 @@ lxml = "^5.1.0"
 html5lib = "^1.1"
 selenium = "^4.17.2"
 webdriver-manager = "^4.0.1"
+pyproject-toml = "^0.0.10"
+regex = "^2023.12.25"
 
 
 [build-system]
