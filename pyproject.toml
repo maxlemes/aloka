@@ -1,25 +1,15 @@
-[tool.poetry]
-name = "yahoo-scraping"
-version = "0.1.0"
-description = ""
-authors = ["Your Name <you@example.com>"]
-readme = "README.md"
-packages = [{include = "yahoo_scraping"}]
+# pyproject.toml
 
-[tool.poetry.dependencies]
-python = "^3.11"
-requests = "^2.31.0"
-beautifulsoup4 = "^4.12.3"
-pandas = "^2.2.0"
-xlsxwriter = "^3.1.9"
-lxml = "^5.1.0"
-html5lib = "^1.1"
-selenium = "^4.17.2"
-webdriver-manager = "^4.0.1"
-pyproject-toml = "^0.0.10"
-regex = "^2023.12.25"
+[tool.black]
+line-length = 88
+exclude = '''
+/(
+    \.venv
+  | __pycache__
+)/
+'''
 
+[tool.isort]
+profile = "black"
+skip = [".venv"]
 
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
