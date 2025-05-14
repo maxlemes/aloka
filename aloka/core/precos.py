@@ -1,8 +1,10 @@
-import yfinance as yf
 import json
 import time
-from alpha_vantage.timeseries import TimeSeries as ts
+
 import requests
+import yfinance as yf
+from alpha_vantage.timeseries import TimeSeries as ts
+
 
 def buscar_preco(codigo: str) -> float:
     """
@@ -34,49 +36,52 @@ def preco_formatado(codigo: str) -> str:
         return f"O preço atual de {codigo.upper()} é R$ {preco:.2f}"
     except Exception as e:
         return f"Erro ao buscar preço de {codigo}: {e}"
-    
+
+
 def atualizar_cotacoes_arquivo(caminho_arquivo):
-    with open(caminho_arquivo, 'r', encoding='utf-8') as f:
+    with open(caminho_arquivo, "r", encoding="utf-8") as f:
         dados = json.load(f)
 
     for ativo in dados:
-        ticker = ativo['ativo']
+        ticker = ativo["ativo"]
         try:
             cotacao = get_price_brapi(ticker, token)
-            ativo['valor'] = round(float(cotacao), 2)
+            ativo["valor"] = round(float(cotacao), 2)
         except Exception as e:
             print(f"Erro ao buscar {ticker}: {e}")
             time.sleep(2)  # espere 2 segundos entre chamadas
-            ativo['valor'] = None
+            ativo["valor"] = None
 
     # sobrescreve o arquivo original
-    with open(caminho_arquivo, 'w', encoding='utf-8') as f:
+    with open(caminho_arquivo, "w", encoding="utf-8") as f:
         json.dump(dados, f, ensure_ascii=False, indent=2)
 
     print("Arquivo atualizado com os valores de cotação.")
 
+
 def get_price(ticker) -> float | bool:
-        """Fetches the current stock price using `info["currentPrice"]`."""
+    """Fetches the current stock price using `info["currentPrice"]`."""
 
-        try:
-            # Retrieve stock data
-            stock = yf.Ticker(ticker + ".SA")
-            print(stock)
+    try:
+        # Retrieve stock data
+        stock = yf.Ticker(ticker + ".SA")
+        print(stock)
 
-            # Get current price
-            price = stock.fast_info.get("lastPrice")
+        # Get current price
+        price = stock.fast_info.get("lastPrice")
 
-            # Ensure the info dictionary is not None
-            if price is not None:
-                return price
-            else:
-                print("No data returned!")
-                return False
+        # Ensure the info dictionary is not None
+        if price is not None:
+            return price
+        else:
+            print("No data returned!")
+            return False
 
-        except Exception as e:
-            # Log any exception that occurs
-            print(f"Error fetching stock price for {ticker}: {e}")
-        return None
+    except Exception as e:
+        # Log any exception that occurs
+        print(f"Error fetching stock price for {ticker}: {e}")
+    return None
+
 
 def get_price_brapi(ticker: str, token: str) -> float | None:
     """Busca o preço atual da ação via API da Brapi com token de autenticação."""
@@ -96,7 +101,8 @@ def get_price_brapi(ticker: str, token: str) -> float | None:
     except Exception as e:
         print(f"[{ticker}] Erro ao buscar preço na Brapi: {e}")
         return None
-    
+
+
 # Exemplo de como usar
 if __name__ == "__main__":
     token = "pdqpd5oveyyKeRpwrJYSrT"
@@ -106,7 +112,6 @@ if __name__ == "__main__":
     else:
         print("Não foi possível obter o preço.")
 
-   
     arquivos = ["data/acoes.json", "data/fiis.json"]
 
     for caminho_arquivo in arquivos:
