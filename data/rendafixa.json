@@ -1,0 +1,36 @@
+[
+    {
+        "link": "sf2-tropico-cash-fim",
+        "ativo": "MAG CASH",
+        "nome": "MAG CASH FI RF LP",
+        "cnpj": "17.899.612/0001-60",
+        "classe": "Renda Fixa",
+        "tipo": "Renda Fixa - Fundo",
+        "qtd": 39447.630531,
+        "valor": 2.729346
+    },
+    {
+        "link": "",
+        "ativo": "CDB",
+        "classe": "Renda Fixa",
+        "tipo": "Renda Fixa",
+        "qtd": 31995,
+        "valor": 1
+    },
+    {
+        "link": "",
+        "ativo": "Poupança",
+        "classe": "Renda Fixa",
+        "tipo": "Renda Fixa",
+        "qtd": 18309,
+        "valor": 1
+    },
+    {
+        "link": "",
+        "ativo": "Caixa",
+        "classe": "Dinheiro",
+        "tipo": "Dinheiro",
+        "qtd": 167000,
+        "valor": 1
+    }
+]

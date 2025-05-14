@@ -1,40 +1,83 @@
 import pandas as pd
+import matplotlib.pyplot as plt
+import json
+import os
 
-def carregar_csv(arquivo) -> pd.DataFrame:
-    """Lê e retorna um DataFrame do arquivo CSV."""
+def ler_json_e_gerar_dataframe(caminho_arquivo: str) -> pd.DataFrame:
+    """Lê um arquivo JSON com dados de ativos e gera um DataFrame."""
+
+    # Campos desejados fixos
+    campos = ["ativo", "classe", "tipo", "qtd", "valor"]
+    
     try:
-        df = pd.read_csv(arquivo)
-        df = limpar_colunas_valores(df)
+        with open(caminho_arquivo, "r") as file:
+            # Carregar os dados do arquivo JSON
+            dados = json.load(file)
+
+        # Filtra os dados para selecionar apenas os campos desejados
+        dados_filtrados = [{campo: ativo.get(campo) for campo in campos} for ativo in dados]
+
+        # Converter para DataFrame
+        df = pd.DataFrame(dados_filtrados)
+
+        # Calcular a coluna 'patrimonio' (produto de qtd * valor)
+        df['patrimonio'] = df['qtd'] * df['valor']
+
         return df
+
     except Exception as e:
-        raise ValueError(f"Erro ao carregar CSV: {e}")
+        print(f"Erro ao ler o arquivo ou gerar o DataFrame: {e}")
+        return pd.DataFrame()  # Retorna um DataFrame vazio em caso de erro
+
+def ler_multipos_arquivos(caminhos_arquivos: list) -> pd.DataFrame:
+    """Lê múltiplos arquivos JSON e retorna um DataFrame único."""
+    dataframes = []
     
-
-
-def colunas_numericas(df: pd.DataFrame):
-    """Retorna uma lista de colunas numéricas do DataFrame."""
-    return df.select_dtypes(include=["float64", "int64"]).columns.tolist()
-
-def calcular_media(df: pd.DataFrame, coluna: str):
-    """Calcula a média de uma coluna numérica."""
-    return df[coluna].mean()
-
-def limpar_colunas_valores(df: pd.DataFrame) -> pd.DataFrame:
-    """Converte strings formatadas como moeda brasileira para floats"""
+    for caminho in caminhos_arquivos:
+        # Verifica se o arquivo existe
+        if os.path.exists(caminho):
+            df = ler_json_e_gerar_dataframe(caminho)
+            if not df.empty:
+                dataframes.append(df)
+        else:
+            print(f"Arquivo não encontrado: {caminho}")
     
-    def converter(valor: str) -> float:
-        if isinstance(valor, str):
-            return float(
-                valor.replace("R$", "")
-                     .replace(".", "")
-                     .replace(",", ".")
-                     .strip()
-            )
-        return valor
+    # Concatenar todos os DataFrames em um só
+    if dataframes:
+        return pd.concat(dataframes, ignore_index=True)
+    else:
+        return pd.DataFrame()  # Retorna um DataFrame vazio se nenhum arquivo válido for lido
 
-    colunas_para_converter = ["Quantidade"]
-    for col in colunas_para_converter:
-        if col in df.columns:
-            df[col] = df[col].apply(converter)
-    
-    return df
+# Exemplo de como usar
+if __name__ == "__main__":
+    arquivos = ["data/acoes.json", "data/fiis.json", "data/pgbl.json", "data/rendafixa.json"]  # Substitua pelos caminhos reais
+    df = ler_multipos_arquivos(arquivos)
+
+     # Calcular o patrimônio total
+    patrimonio_total = df['patrimonio'].sum()
+    print(patrimonio_total)
+
+    # Calcular a porcentagem de cada ativo sobre o patrimônio total
+    df['percentual'] = (df['patrimonio'] / patrimonio_total) * 100
+
+    # Exibir o DataFrame
+    if not df.empty:
+        print(df)
+    else:
+        print("Erro ao gerar o DataFrame a partir dos arquivos.")
+
+    #  1. Gráfico de rosca para 'classe' x 'patrimonio'
+    classe_patrimonio = df.groupby('classe')['patrimonio'].sum()
+
+    fig, ax = plt.subplots(figsize=(7, 7))
+    ax.pie(classe_patrimonio, labels=classe_patrimonio.index, autopct='%1.1f%%', startangle=90, wedgeprops=dict(width=0.4))
+    ax.set_title('Distribuição de Patrimônio por Classe')
+    # plt.show()
+
+    # 2. Gráfico de rosca para 'tipo' x 'patrimonio'
+    tipo_patrimonio = df.groupby('tipo')['patrimonio'].sum()
+
+    fig, ax = plt.subplots(figsize=(7, 7))
+    ax.pie(tipo_patrimonio, labels=tipo_patrimonio.index, autopct='%1.1f%%', startangle=90, wedgeprops=dict(width=0.4))
+    ax.set_title('Distribuição de Patrimônio por Tipo')
+    plt.show()

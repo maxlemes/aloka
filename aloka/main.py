@@ -1,4 +1,3 @@
-
 import os
 import sys
 
@@ -7,18 +6,16 @@ ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if ROOT_DIR not in sys.path:
     sys.path.insert(0, ROOT_DIR)
 
-import streamlit as st
 import pandas as pd
+import streamlit as st
 
+from aloka.core.dados import calcular_media, carregar_csv, colunas_numericas
 from aloka.core.precos import preco_formatado
-from aloka.core.dados import carregar_csv, colunas_numericas, calcular_media
-
 
 
 def main():
     st.set_page_config(page_title="Aloka", layout="wide")
     st.title("💸 Aloka 💰 – Alocação Finaceira")
-
 
     arquivo = st.file_uploader("🔼 Envie seu arquivo CSV", type="csv")
 
