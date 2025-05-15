@@ -62,7 +62,7 @@ def atualizar_cotas(dados_principais, pasta="data"):
     for ativo in dados_principais:
 
         # Verifica se o link existe
-        if ativo['link']:
+        if ativo["link"]:
 
             # seleciona o arquivo JSON
             arquivo_json = os.path.join(pasta, f"{ativo['link']}.json")
