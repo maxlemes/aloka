@@ -1,0 +1,18 @@
+[
+    {
+        "ativo": "KNIP11",
+        "classe": "Renda Variável",
+        "tipo": "FII",
+        "qtd": 110,
+        "valor": 90.65,
+        "ultima_atualizacao": "14/05/2025 21:05"
+    },
+    {
+        "ativo": "KNHY11",
+        "classe": "Renda Variável",
+        "tipo": "FII",
+        "qtd": 100,
+        "valor": 102.39,
+        "ultima_atualizacao": "14/05/2025 21:06"
+    }
+]

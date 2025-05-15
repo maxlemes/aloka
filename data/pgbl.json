@@ -1,0 +1,46 @@
+[
+    {
+        "link": "acs-mag-prev-cash-fundo-de-investimento-em-cotas-de-fundo-de-investimento-renda-fixa",
+        "ativo": "MAG PREV",
+        "nome": "ACS MAG PREV CASH FI EM COTAS DE FI RF",
+        "cnpj": "51.168.372/0001-62",
+        "classe": "Renda Fixa",
+        "tipo": "Renda Fixa - PGBL",
+        "qtd": 17590.39,
+        "valor": 1.167008,
+        "ultima_atualizacao": "14/05/2025"
+    },
+    {
+        "link": "verde-am-icatu-prev-fic-fim-prev",
+        "ativo": "VERDE PREV",
+        "nome": "VERDE AM ICATU PREV FIC FIM PREV",
+        "cnpj": "23.339.936/0001-47",
+        "classe": "Renda Variável",
+        "tipo": "Ações - PGBL",
+        "qtd": 14156.05,
+        "valor": 2.211232,
+        "ultima_atualizacao": "14/05/2025"
+    },
+    {
+        "link": "real-investor-70-previdencia-fim",
+        "ativo": "REAL INVESTOR",
+        "nome": "REAL INVESTOR 70 PREVIDENCIA FIM",
+        "cnpj": "33.588.607/0001-93",
+        "classe": "Renda Variável",
+        "tipo": "Ações - PGBL",
+        "qtd": 21979.84377238,
+        "valor": 1.857796,
+        "ultima_atualizacao": "14/05/2025"
+    },
+    {
+        "link": "sul-america-prev-fic-fi-rf-cp",
+        "ativo": "SULAMERICA",
+        "nome": "SULAMERICA ADAM PREV FIC FIM",
+        "cnpj": "39.599.579/0001-96",
+        "classe": "Renda Fixa",
+        "tipo": "Renda Fixa - PGBL",
+        "qtd": 2317.76701699,
+        "valor": 15.8455,
+        "ultima_atualizacao": "14/05/2025"
+    }
+]

@@ -1,0 +1,66 @@
+[
+    {
+        "ativo": "BBAS3",
+        "classe": "Renda Variável",
+        "tipo": "Ações",
+        "qtd": 4000,
+        "valor": 29.76,
+        "ultima_atualizacao": "14/05/2025 21:05"
+    },
+    {
+        "ativo": "EZTC3",
+        "classe": "Renda Variável",
+        "tipo": "Ações",
+        "qtd": 1500,
+        "valor": 13.32,
+        "ultima_atualizacao": "14/05/2025 21:05"
+    },
+    {
+        "ativo": "FESA4",
+        "classe": "Renda Variável",
+        "tipo": "Ações",
+        "qtd": 2000,
+        "valor": 7.06,
+        "ultima_atualizacao": "14/05/2025 21:05"
+    },
+    {
+        "ativo": "KLBN4",
+        "classe": "Renda Variável",
+        "tipo": "Ações",
+        "qtd": 7700,
+        "valor": 3.9,
+        "ultima_atualizacao": "14/05/2025 21:05"
+    },
+    {
+        "ativo": "LEVE3",
+        "classe": "Renda Variável",
+        "tipo": "Ações",
+        "qtd": 1200,
+        "valor": 29.52,
+        "ultima_atualizacao": "14/05/2025 21:05"
+    },
+    {
+        "ativo": "SIMH3",
+        "classe": "Renda Variável",
+        "tipo": "Ações",
+        "qtd": 6000,
+        "valor": 4.74,
+        "ultima_atualizacao": "14/05/2025 21:05"
+    },
+    {
+        "ativo": "SLCE3",
+        "classe": "Renda Variável",
+        "tipo": "Ações",
+        "qtd": 1100,
+        "valor": 18.66,
+        "ultima_atualizacao": "14/05/2025 21:05"
+    },
+    {
+        "ativo": "TUPY3",
+        "classe": "Renda Variável",
+        "tipo": "Ações",
+        "qtd": 1000,
+        "valor": 19.42,
+        "ultima_atualizacao": "14/05/2025 21:05"
+    }
+]

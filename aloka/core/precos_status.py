@@ -2,6 +2,8 @@ import json
 import os
 import time
 
+from datetime import datetime
+
 import yfinance as yf
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -9,29 +11,40 @@ from selenium.webdriver.firefox.options import Options
 
 
 def capturar_dados_fundo(link: str):
+
+    # determina a URL geral
     url = f"https://statusinvest.com.br/fundos-de-investimento/{link}"
 
+    # determina o XPATH das tabelas
     xpath_nome = "/html/body/main/header/div[2]/div/div[1]/h1"
     xpath_cota = "/html/body/main/div[2]/div/div/div[6]/div/div/strong"
     xpath_cnpj = "/html/body/main/div[4]/div/div[1]/div/div/div[1]/h5[2]"
 
-    # Configura o Firefox em modo headless (sem abrir a janela)
-    # options = Options()
-    # options.headless = True
-    # driver = webdriver.Firefox(options=options)
-
+    # inicia o navegador
     driver.get(url)
 
-    # Aguarda carregar (você pode ajustar com waits explícitos depois)
+    # Aguarda carregar
     time.sleep(5)
 
-    # Exemplo: pegar nome do fundo
-    nome = driver.find_element(By.XPATH, xpath_nome).text
-    cota = driver.find_element(By.XPATH, xpath_cota).text
-    cnpj = driver.find_element(By.XPATH, xpath_cnpj).text
+    # captura os dados de interesse: nome, cota, cnpj
+    try:
+        nome = driver.find_element(By.XPATH, xpath_nome).text
+    except Exception:
+        print(f"Erro ao buscar nome do fundo: {link}")
+        nome = "Desconhecido"
 
-    # Converte a cota de string para número, substituindo a vírgula por ponto
-    cota = float(cota.replace(",", "."))
+    try:
+        cota = driver.find_element(By.XPATH, xpath_cota).text
+        cota = float(cota.replace(",", "."))
+    except Exception:
+        print(f"Erro ao buscar cota do fundo: {link}")
+        cota = None
+
+    try:
+        cnpj = driver.find_element(By.XPATH, xpath_cnpj).text
+    except Exception:
+        print(f"Erro ao buscar CNPJ do fundo: {link}")
+        cnpj = "Não encontrado"
 
     dados = {"link": link, "nome": nome, "cnpj": cnpj, "valor": cota}
 
@@ -42,84 +55,151 @@ def capturar_dados_fundo(link: str):
     caminho_arquivo = os.path.join("data", f"{link}.json")
 
     # Salva os dados em formato JSON
-    with open(caminho_arquivo, "w", encoding="utf-8") as f:
-        json.dump(dados, f, indent=4, ensure_ascii=False)
-
-    print(f"Dados salvos em: {caminho_arquivo}")
+    salvar_json(dados, caminho_arquivo)
 
 
-def atualizar_cota(dados_principais, pasta="data"):
+def atualizar_cotas(dados_principais, pasta="data"):
     # Caminho para o diretório onde os arquivos JSON estão armazenados
     for fundo in dados_principais:
+
+        # seleciona o arquivo JSON
         arquivo_json = os.path.join(pasta, f"{fundo['link']}.json")
 
         # Verifica se o arquivo existe
         if os.path.exists(arquivo_json):
+           
             # Abre o arquivo do fundo
-            with open(arquivo_json, "r", encoding="utf-8") as f:
-                dados_fundo = json.load(f)
+            dados_fundo = ler_json(arquivo_json)
 
             # Pega o valor de cota e adiciona ao dado principal
             fundo["valor"] = dados_fundo.get("valor")
 
+            # adicionando a data
+            fundo["ultima_atualizacao"] = datetime.today().strftime("%d/%m/%Y %H:%M")
+
             # Após a atualização das cotas, exclui o arquivo
-            os.remove(arquivo_json)
+            # os.remove(arquivo_json)
 
         else:
             print(f"Arquivo {arquivo_json} não encontrado!")
 
     return dados_principais
 
+def ler_json(caminho_arquivo):
+    """Lê e retorna dados de um arquivo JSON."""
+    if os.path.exists(caminho_arquivo):
+        with open(caminho_arquivo, "r", encoding="utf-8") as f:
+            return json.load(f)
+    else:
+        print(f"[ERRO] Arquivo não encontrado: {caminho_arquivo}")
+        return []  # ou None, dependendo do contexto
 
-def salvar_dados(dados_principais, caminho_arquivo):
-    # Salva os dados atualizados de volta no arquivo JSON
+
+def salvar_json(dados, caminho_arquivo):
+    """Salva dados em um arquivo JSON com indentação e UTF-8."""
+    os.makedirs(os.path.dirname(caminho_arquivo), exist_ok=True)
     with open(caminho_arquivo, "w", encoding="utf-8") as f:
-        json.dump(dados_principais, f, indent=4, ensure_ascii=False)
-    print(f"Dados salvos no arquivo {caminho_arquivo}")
+        json.dump(dados, f, indent=4, ensure_ascii=False)
+    print(f"✔ Arquivo salvo: {caminho_arquivo}")
 
 
-# Função principal para ler o arquivo pgbl.json
-def ler_dados_principais(caminho_arquivo):
-    with open(caminho_arquivo, "r", encoding="utf-8") as f:
-        dados = json.load(f)
-    return dados
+def get_price(ticker) -> float | bool:
+    """Fetches the current stock price using `info["currentPrice"]`."""
+
+    try:
+        # Retrieve stock data
+        stock = yf.Ticker(ticker + ".SA")
+
+        # Get current price
+        price = stock.info.get("currentPrice")
+
+        # Ensure the info dictionary is not None
+        if price is not None:
+            return price
+        else:
+            print("No data returned!")
+            return False
+
+    except Exception as e:
+        # Log any exception that occurs
+        print(f"Error fetching stock price for {ticker}: {e}")
+
+    return None
+
+def atualizar_cotacoes(caminho_arquivo):
+
+    # le o arquivo JSON
+    dados = ler_json(caminho_arquivo)
+    
+    # para cata ativo no arquivo JSON captura a cotacao atual
+    for ativo in dados:
+        ticker = ativo["ativo"]
+       
+        try:
+            cotacao = get_price(ticker)
+            if cotacao:
+                ativo["valor"] = round(float(cotacao), 2)
+                ativo["ultima_atualizacao"] = datetime.now().strftime("%d/%m/%Y %H:%M")
+            else:
+                ativo["valor"] = None
+
+        except Exception as e:
+            print(f"Erro ao buscar {ticker}: {e}")
+            time.sleep(2)  # espere 2 segundos entre chamadas
+            ativo["valor"] = None
+
+    # sobrescreve o arquivo original
+    salvar_json(dados, caminho_arquivo)
+
+    print("✔ Arquivo atualizado com os valores de cotação.")
 
 
 # Exemplo de como usar
 if __name__ == "__main__":
 
-    fundos = [
-        "sf2-tropico-cash-fim",
-        "real-investor-70-previdencia-fim",
-        "sul-america-prev-fic-fi-rf-cp",
-        "verde-am-icatu-prev-fic-fim-prev",
-        "acs-mag-prev-cash-fundo-de-investimento-em-cotas-de-fundo-de-investimento-renda-fixa",
-    ]
+    # definindo o endereço dos arquivos com os dados dos ativos
+    classe_fundos = ["data/rendafixa.json", "data/pgbl.json"]
+    classe_b3 = ["data/acoes.json", "data/fiis.json"]
+
+    # criando uma lista vazia para os fundos
+    fundos = []
+
+    # lendo os links dos fundos
+    for arquivo in classe_fundos:
+        classe = ler_json(arquivo)
+
+        for ativo in classe:
+            link = ativo.get("link")
+            if link:
+                fundos.append(link)
 
     # Configura o Firefox em modo headless (sem abrir a janela)
     options = Options()
-    options.headless = True
+    options.add_argument("--headless")
     driver = webdriver.Firefox(options=options)
 
     # Captura os dados de todos os fundos
     for fundo in fundos:
         capturar_dados_fundo(fundo)
+        os.remove(f"data/{fundo}.json")
 
+    # fechando o navegador
     driver.quit()
 
-    arquivos = ["data/rendafixa.json", "data/pgbl.json"]
-
-    for caminho_arquivo in arquivos:
+    # adicionando as informações dos fundos
+    for caminho_arquivo in classe_fundos:
 
         # Lê os dados principais do arquivo pgbl.json
-        dados_principais = ler_dados_principais(caminho_arquivo)
+        dados_principais = ler_json(caminho_arquivo)
 
         # Atualiza os dados principais com o valor de cota
-        dados_atualizados = atualizar_cota(dados_principais)
+        dados_atualizados = atualizar_cotas(dados_principais)
 
         # Salva os dados atualizados no arquivo
-        salvar_dados(dados_atualizados, caminho_arquivo)
+        salvar_json(dados_atualizados, caminho_arquivo)
 
-        # Imprime os dados atualizados
-        for fundo in dados_atualizados:
-            print(json.dumps(fundo, indent=4, ensure_ascii=False))
+    # adicionando as cotacoes dos ativos da B3
+    for caminho_arquivo in classe_b3:
+
+        # Lê os dados principais do arquivo pgbl.json
+        atualizar_cotacoes(caminho_arquivo)
