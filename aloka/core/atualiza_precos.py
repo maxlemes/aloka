@@ -1,7 +1,6 @@
 import json
 import os
 import time
-
 from datetime import datetime
 
 import yfinance as yf
@@ -60,30 +59,31 @@ def capturar_dados_fundo(link: str):
 
 def atualizar_cotas(dados_principais, pasta="data"):
     # Caminho para o diretório onde os arquivos JSON estão armazenados
-    for fundo in dados_principais:
+    for ativo in dados_principais:
 
-        # seleciona o arquivo JSON
-        arquivo_json = os.path.join(pasta, f"{fundo['link']}.json")
+        # Verifica se o link existe
+        if ativo['link']:
 
-        # Verifica se o arquivo existe
-        if os.path.exists(arquivo_json):
-           
+            # seleciona o arquivo JSON
+            arquivo_json = os.path.join(pasta, f"{ativo['link']}.json")
+
+            # # Verifica se o arquivo existe
+            # if os.path.exists(arquivo_json):
+
             # Abre o arquivo do fundo
-            dados_fundo = ler_json(arquivo_json)
+            dados_atuais = ler_json(arquivo_json)
 
             # Pega o valor de cota e adiciona ao dado principal
-            fundo["valor"] = dados_fundo.get("valor")
+            ativo["valor"] = dados_atuais.get("valor")
 
-            # adicionando a data
-            fundo["ultima_atualizacao"] = datetime.today().strftime("%d/%m/%Y %H:%M")
-
-            # Após a atualização das cotas, exclui o arquivo
-            # os.remove(arquivo_json)
+            # adicionando a data da ultima atualizacao
+            ativo["ultima_atualizacao"] = datetime.today().strftime("%d/%m/%Y %H:%M")
 
         else:
-            print(f"Arquivo {arquivo_json} não encontrado!")
+            print(f"O ativo {ativo['ativo']} não atualiza o preço.")
 
     return dados_principais
+
 
 def ler_json(caminho_arquivo):
     """Lê e retorna dados de um arquivo JSON."""
@@ -126,15 +126,16 @@ def get_price(ticker) -> float | bool:
 
     return None
 
+
 def atualizar_cotacoes(caminho_arquivo):
 
     # le o arquivo JSON
     dados = ler_json(caminho_arquivo)
-    
+
     # para cata ativo no arquivo JSON captura a cotacao atual
     for ativo in dados:
         ticker = ativo["ativo"]
-       
+
         try:
             cotacao = get_price(ticker)
             if cotacao:
@@ -173,30 +174,32 @@ if __name__ == "__main__":
             if link:
                 fundos.append(link)
 
-    # Configura o Firefox em modo headless (sem abrir a janela)
-    options = Options()
-    options.add_argument("--headless")
-    driver = webdriver.Firefox(options=options)
+    # # Configura o Firefox em modo headless (sem abrir a janela)
+    # options = Options()
+    # options.add_argument("--headless")
+    # driver = webdriver.Firefox(options=options)
 
-    # Captura os dados de todos os fundos
-    for fundo in fundos:
-        capturar_dados_fundo(fundo)
-        os.remove(f"data/{fundo}.json")
+    # # Captura os dados de todos os fundos
+    # for fundo in fundos:
+    #     capturar_dados_fundo(fundo)
+    #     # os.remove(f"data/{fundo}.json")
 
-    # fechando o navegador
-    driver.quit()
+    # # fechando o navegador
+    # driver.quit()
+
+    print("Vamos agora capturar as cotações")
 
     # adicionando as informações dos fundos
-    for caminho_arquivo in classe_fundos:
+    for classe_arquivo in classe_fundos:
 
         # Lê os dados principais do arquivo pgbl.json
-        dados_principais = ler_json(caminho_arquivo)
+        dados_classe = ler_json(classe_arquivo)
 
         # Atualiza os dados principais com o valor de cota
-        dados_atualizados = atualizar_cotas(dados_principais)
+        dados_atualizados = atualizar_cotas(dados_classe)
 
         # Salva os dados atualizados no arquivo
-        salvar_json(dados_atualizados, caminho_arquivo)
+        salvar_json(dados_atualizados, classe_arquivo)
 
     # adicionando as cotacoes dos ativos da B3
     for caminho_arquivo in classe_b3:
